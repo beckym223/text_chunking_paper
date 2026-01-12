@@ -123,7 +123,7 @@ preprocess_make_dfm <- function(chunked_df) {
     tokens_processed <- tokens %>%
         tokens_tolower() %>%
         
-        ## --- multi-word normalization first ---
+        ## --- multi-word normalization ---
         tokens_compound(
             pattern = phrase(c("per cent",'market place'))
         ) %>%
