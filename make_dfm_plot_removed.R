@@ -2,21 +2,12 @@ suppressPackageStartupMessages({
     library(quanteda)
     library(stm)
 })
-
+source("text_funcs.R")
 args <- commandArgs(trailingOnly = TRUE)
 chunk_name <- args[1]
 
-## ---------- USER-EDITABLE THRESHOLDS ----------
-lower_thresholds <- c(
-    document   = 10,
-    paragraph  = 20,
-    page       = 20,
-    sent_200   = 20,
-    sent_500   = 20
-)
-## ---------------------------------------------
 
-lower_thresh <- lower_thresholds[[chunk_name]]
+lower_thresh <- get_lower_thresh(chunk_name)
 
 chunk_dfs <- readRDS("data/chunked_dfs.rds")
 chunk_df  <- chunk_dfs[[chunk_name]]
@@ -40,12 +31,20 @@ png(
 plotRemoved(
     dfm_stm$documents,
     seq(0, 100, 5)
+)abline(
+    v = lower_thresh,
+    col = "red",
+    lty = 2,
+    lwd = 2
 )
+
 title(
     main = paste(
         "plotRemoved diagnostics:",
-        chunk_name,
-        "(lower.thresh =", lower_thresh, ")"
+        chunk_name
+    ),
+    sub = paste(
+        "Red dashed line = lower.thresh =", lower_thresh
     )
 )
 

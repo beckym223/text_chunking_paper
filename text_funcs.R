@@ -1,3 +1,25 @@
+get_lower_thresh <- function(chunk_name) {
+    
+    ## ---------- USER-EDITABLE THRESHOLDS ----------
+    lower_thresholds <- c(
+        document   = 10,
+        paragraph  = 20,
+        page       = 20,
+        sent_200   = 20,
+        sent_500   = 20
+    )
+    ## ---------------------------------------------
+    
+    if (chunk_name %in% names(thresholds)) {
+        thresholds[[chunk_name]]
+    } else {
+        10
+    }
+}
+
+
+
+
 get_num_words <-function(text){
     require(stringr)
     map_int(text, ~ str_count(.x, "\\b[\\w-]+\\b[^\\w]*")[[1]])
@@ -143,4 +165,5 @@ preprocess_make_dfm <- function(chunked_df) {
     
     return(dfm)
 }
+
 
