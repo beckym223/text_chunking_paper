@@ -66,4 +66,32 @@ combine_chunks_to_size <- function(chunk_lengths, target_size, split_before_targ
     new_chunk_idxs
 }
 
+make_sentence_chunks <- function(doc_df, target_size) {
+    require(dplyr)
+    
+    sentence_df <- doc_df %>%
+        mutate(sentence = get_sentences(text)) %>%
+        unnest(sentence) %>%
+        filter(str_detect(sentence, "[a-zA-Z]+")) %>%
+        mutate(num_words = get_num_words(sentence)) %>%
+        group_by(text_id) %>%
+        mutate(sent_idx = combine_chunks_to_size(
+            num_words,
+            target_size,
+            split_before_target = FALSE
+        )) %>%
+        group_by(text_id, sent_idx) %>%
+        summarize(
+            meeting_num = first(meeting_num),
+            text = paste(sentence, collapse = " "),
+            .groups = "drop"
+        ) %>%
+        mutate(
+            text_id = paste0(text_id, "-", sent_idx)
+        ) %>%
+        select(text_id, meeting_num, text)
+    
+    sentence_df
+}
+
 
