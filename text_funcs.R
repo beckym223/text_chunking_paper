@@ -94,4 +94,53 @@ make_sentence_chunks <- function(doc_df, target_size) {
     sentence_df
 }
 
+preprocess_make_dfm <- function(chunked_df) {
+    require(quanteda)
+    require(dplyr)
+    require(stm)
+    
+    corpus <- corpus(
+        chunked_df,
+        docid_field = "text_id",
+        text_field  = "text",
+        unique_docnames = TRUE
+    )
+    
+    tokens <- tokens(
+        corpus,
+        remove_punct = TRUE,
+        remove_symbols = TRUE,
+        remove_numbers = TRUE,
+        remove_url = FALSE,
+        remove_separators = TRUE,
+        split_hyphens = FALSE,
+        split_tags = FALSE,
+        include_docvars = TRUE,
+        padding = FALSE,
+        concatenator = "_"
+    )
+    
+    tokens_processed <- tokens %>%
+        tokens_tolower() %>%
+        
+        ## --- multi-word normalization first ---
+        tokens_compound(
+            pattern = phrase(c("per cent",'market place'))
+        ) %>%
+        tokens_replace(
+            pattern = c("per_cent",'market_place',"to-day", "per-cent", "market-place"),
+            replacement = c("percent",'marketplace',"today", "percent", "marketplace")
+        ) %>%
+        
+        ## --- standard preprocessing ---
+        tokens_remove(stopwords("en")) %>%
+        tokens_wordstem()
+    
+    metadata <- chunked_df %>%
+        select(text_id, year)
+    
+    dfm <- dfm(tokens_processed) %>% convert(to = "stm", docvars = metadata)
+    
+    return(dfm)
+}
 
