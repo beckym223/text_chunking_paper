@@ -1,0 +1,199 @@
+# Libraries
+
+```{r message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(stringr)
+library(stringi)
+
+```
+
+
+# Load paragraph data frame, make output dir
+
+```{r}
+para_df_path<-"data_const/para_df.csv"
+og_para_df<-read_csv(para_df_path,show_col_types = F)
+output.dir<-"chunked_dfs"
+
+if(!dir.exists(output.dir)){
+    dir.create(output.dir, recursive = T)
+}
+```
+
+
+
+
+# Chunking Strategy 1: Full documents
+
+```{r}
+output.name1<-"full_doc_df.csv"
+doc_df <-og_para_df %>%
+    group_by(doc_id)%>%
+    mutate(doc_text = paste(text, collapse = '\n'))%>%
+    distinct(doc_id,meeting_num,doc_text)
+
+output.path1<-file.path(output.dir,output.name1)
+write_csv(doc_df,output.path1)
+cat(sprintf("\nSaved to %s",output.path1))
+```
+
+# Chunking Strategy 2: Original document pages
+
+```{r}
+page_df_path<-"data_const/page_df.csv"
+page_df = read_csv(page_df_path,show_col_types = F)
+out.path = file.path(output.dir,"page_df.csv")
+write_csv(page_df,out.path)
+```
+
+
+# Chunking Strategy 2: Fixed size chunks, nearest sentence
+
+
+### Utility Functions
+
+```{r}
+
+get_num_words <-function(text){
+    map_int(text, ~ str_count(.x, "\\b[\\w-]+\\b[^\\w]*")[[1]])
+}
+
+
+get_sentences <- function(text_to_split){
+    require(stringi)
+    stri_split_boundaries(text_to_split,type='sentence')%>%
+        lapply(stri_trim_right)
+}
+
+combine_chunks_to_size <- function(chunk_lengths, target_size, split_before_target = FALSE) {
+    new_chunk_idxs <- integer(0)  # output indices
+    current_idx <- 0             # running group index
+    current_join_len <- 0           # running length of current group
+    current_join_num_chunks <- 0
+    for (i in seq_along(chunk_lengths)) {
+        current_chunk_len <- chunk_lengths[i]
+        current_join_len <- current_join_len + current_chunk_len
+        
+        if (current_join_len<target_size){
+            current_join_num_chunks <- current_join_num_chunks + 1
+            #print(sprintf("On index %d with new join length of %d made up of %d chunks. Continuing", 
+            #             current_idx, current_join_len, current_join_num_chunks))
+            
+            
+        } else if ((current_join_len == target_size) | (!split_before_target)){
+            #print(sprintf(" on index %d with %d chunks.", current_idx, current_join_num_chunks))
+            current_join_num_chunks = current_join_num_chunks+1
+            
+            # print(sprintf("Matched or supassed target size with current length %d, extending list with index %d and %d chunks", 
+            #              current_join_len, current_idx, current_join_num_chunks))
+            new_chunk_idxs <- c(new_chunk_idxs, rep(current_idx, current_join_num_chunks))
+            
+            #reset
+            current_idx <-current_idx + 1
+            current_join_len <- 0
+            current_join_num_chunks <-0
+            
+        } else {
+            # means it surpasses the target
+            # print(sprintf("passed target and splitting before: extending list with index %d and %d chunks",
+            #              current_idx, current_join_num_chunks))
+            new_chunk_idxs <- c(new_chunk_idxs, rep(current_idx, current_join_num_chunks))
+            
+            #starting the next index
+            current_join_num_chunks <- 1
+            current_idx <- current_idx + 1
+            current_join_len <- current_chunk_len
+            
+            
+            
+        }
+    }
+    if (current_join_num_chunks>0){
+        #  print(sprintf("leftover chunks: extending list with index %d and %d chunks", current_idx, current_join_num_chunks))
+        new_chunk_idxs <- c(new_chunk_idxs, rep(current_idx, current_join_num_chunks)) #add any remaining chunks
+        
+    }
+    if (length(new_chunk_idxs) != length(chunk_lengths)) {
+        stop(sprintf("\nIndex list of length %d does not match sentence list length %d",
+                     length(new_chunk_idxs), length(chunk_lengths)))
+    }
+    
+    new_chunk_idxs
+}
+```
+### Uncertainty
+
+Sample the tokenized sentences and count how many are improperly split, report that
+
+## Chunking 2.1: 200 words, nearest sentence
+```{r}
+output.name2<-"sentence_200_plus_df.csv"
+output.path2<-file.path(output.dir,output.name2)
+sentence_df <- doc_df %>%
+    mutate(sentence = get_sentences(doc_text))%>%
+    unnest(sentence) %>%
+    filter(str_detect(sentence,"[a-zA-Z]+"))%>%
+        mutate(num_words = get_num_words(sentence))%>%
+    group_by(doc_id)%>%
+    mutate(sent_id = paste0(doc_id,"-s",row_number()))%>%
+    select(doc_id, meeting_num, sent_id, sentence,num_words)
+
+sentence_200_indexed<-sentence_df%>%
+    group_by(doc_id)%>%
+    mutate(sent_idx = combine_chunks_to_size(num_words,200,split_before_target=F))
+
+
+sentence_200_final<-sentence_200_indexed%>%
+    group_by(doc_id,sent_idx)%>%
+    mutate(text = paste(sentence,collapse=" "),
+           text_id = paste0(doc_id,"-",sent_idx)
+           )%>%
+    ungroup()%>%
+    distinct(doc_id,text_id, meeting_num, text)
+    
+
+write_csv(sentence_200_final,output.path2)
+```
+
+
+## Chunking 2.2: 500 words, nearest sentence
+
+```{r}
+
+output.name3<-"sentence_500_plus_df.csv"
+output.path3<-file.path(output.dir,output.name3)
+sentence_df <- doc_df %>%
+    mutate(sentence = get_sentences(doc_text))%>%
+    unnest(sentence) %>%
+    filter(str_detect(sentence,"[a-zA-Z]+"))%>%
+        mutate(num_words = get_num_words(sentence))%>%
+    group_by(doc_id)%>%
+    mutate(sent_id = paste0(doc_id,"-s",row_number()))%>%
+    select(doc_id, meeting_num, sent_id, sentence,num_words)
+
+sentence_500_indexed<-sentence_df%>%
+    group_by(doc_id)%>%
+    mutate(sent_idx = combine_chunks_to_size(num_words,500,split_before_target=F))
+
+
+sentence_500_final<-sentence_500_indexed%>%
+    group_by(doc_id,sent_idx)%>%
+    mutate(text = paste(sentence,collapse=" "),
+           text_id = paste0(doc_id,"-",sent_idx)
+           )%>%
+    ungroup()%>%
+    distinct(doc_id,text_id, meeting_num, text)
+    
+
+write_csv(sentence_500_final,output.path3)
+```
+
+# Chunking strategy 3: Author-created paragraphs
+```{r}
+
+out.path = file.path(output.dir, "para_df.csv")
+write_csv(og_para_df,out.path)
+
+```
+
