@@ -1,0 +1,69 @@
+get_num_words <-function(text){
+    require(stringr)
+    map_int(text, ~ str_count(.x, "\\b[\\w-]+\\b[^\\w]*")[[1]])
+}
+
+get_sentences <- function(text_to_split){
+    require(stringi)
+    stri_split_boundaries(text_to_split,type='sentence')%>%
+        lapply(stri_trim_right)
+}
+
+
+combine_chunks_to_size <- function(chunk_lengths, target_size, split_before_target = FALSE) {
+    new_chunk_idxs <- integer(0)  # output indices
+    current_idx <- 0             # running group index
+    current_join_len <- 0           # running length of current group
+    current_join_num_chunks <- 0
+    for (i in seq_along(chunk_lengths)) {
+        current_chunk_len <- chunk_lengths[i]
+        current_join_len <- current_join_len + current_chunk_len
+        
+        if (current_join_len<target_size){
+            current_join_num_chunks <- current_join_num_chunks + 1
+            #print(sprintf("On index %d with new join length of %d made up of %d chunks. Continuing", 
+            #             current_idx, current_join_len, current_join_num_chunks))
+            
+            
+        } else if ((current_join_len == target_size) | (!split_before_target)){
+            #print(sprintf(" on index %d with %d chunks.", current_idx, current_join_num_chunks))
+            current_join_num_chunks = current_join_num_chunks+1
+            
+            # print(sprintf("Matched or supassed target size with current length %d, extending list with index %d and %d chunks", 
+            #              current_join_len, current_idx, current_join_num_chunks))
+            new_chunk_idxs <- c(new_chunk_idxs, rep(current_idx, current_join_num_chunks))
+            
+            #reset
+            current_idx <-current_idx + 1
+            current_join_len <- 0
+            current_join_num_chunks <-0
+            
+        } else {
+            # means it surpasses the target
+            # print(sprintf("passed target and splitting before: extending list with index %d and %d chunks",
+            #              current_idx, current_join_num_chunks))
+            new_chunk_idxs <- c(new_chunk_idxs, rep(current_idx, current_join_num_chunks))
+            
+            #starting the next index
+            current_join_num_chunks <- 1
+            current_idx <- current_idx + 1
+            current_join_len <- current_chunk_len
+            
+            
+            
+        }
+    }
+    if (current_join_num_chunks>0){
+        #  print(sprintf("leftover chunks: extending list with index %d and %d chunks", current_idx, current_join_num_chunks))
+        new_chunk_idxs <- c(new_chunk_idxs, rep(current_idx, current_join_num_chunks)) #add any remaining chunks
+        
+    }
+    if (length(new_chunk_idxs) != length(chunk_lengths)) {
+        stop(sprintf("\nIndex list of length %d does not match sentence list length %d",
+                     length(new_chunk_idxs), length(chunk_lengths)))
+    }
+    
+    new_chunk_idxs
+}
+
+
