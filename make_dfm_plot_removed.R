@@ -12,7 +12,7 @@ lower_thresh <- get_lower_thresh(chunk_name)
 chunk_dfs <- readRDS("data/chunked_dfs.rds")
 chunk_df  <- chunk_dfs[[chunk_name]]
 
-dfm_stm <- prep_for_stm(chunk_df)
+dfm_stm <- preprocess_make_dfm(chunk_df)
 
 out_dfm_dir <- file.path("results/dfms", chunk_name)
 out_plot_dir <- file.path("results/plotRemoved", chunk_name)
