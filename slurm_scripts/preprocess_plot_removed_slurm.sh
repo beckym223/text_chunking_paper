@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=stm_plotRemoved
-#SBATCH --output=results/logs/plotRemoved_%A_%a.out
-#SBATCH --error=results/logs/plotRemoved_%A_%a.err
+#SBATCH --output=cleaner_package/results/logs/plotRemoved_%A_%a.out
+#SBATCH --error=cleaner_package/results/logs/plotRemoved_%A_%a.err
 #SBATCH --array=0-4
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=8G
@@ -14,4 +14,4 @@ cd ~/cleaner_package || { echo "Failed to change directory to ~/stm_work"; exit 
 CHUNKS=(document paragraph page sent_200 sent_500)
 CHUNK_NAME=${CHUNKS[$SLURM_ARRAY_TASK_ID]}
 
-Rscript scripts/make_dfm_and_plotRemoved.R $CHUNK_NAME
+Rscript scripts/make_dfm_plotRemoved.R $CHUNK_NAME
