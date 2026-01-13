@@ -104,14 +104,14 @@ make_sentence_chunks <- function(doc_df, target_size) {
         )) %>%
         group_by(text_id, sent_idx) %>%
         summarize(
-            meeting_num = first(meeting_num),
+            year = first(year),
             text = paste(sentence, collapse = " "),
             .groups = "drop"
         ) %>%
         mutate(
             text_id = paste0(text_id, "-", sent_idx)
         ) %>%
-        select(text_id, meeting_num, text)
+        select(text_id, year, text)
     
     sentence_df
 }
