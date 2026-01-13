@@ -16,7 +16,7 @@ source("text_funcs.R")
 ```{r}
 para_df_path<-"data_const/para_df.csv"
 para_df<-read_csv(para_df_path,show_col_types = F)
-output.dir<-"chunked_dfs"
+output.dir<-"data"
 
 if(!dir.exists(output.dir)){
     dir.create(output.dir, recursive = T)
@@ -66,7 +66,7 @@ sent_500_df <- make_sentence_chunks(doc_df, 500)
 ```{r}
 
 out.path = file.path(output.dir, "para_df.csv")
-write_csv(og_para_df,out.path)
+write_csv(para_df,out.path)
 
 ```
 
@@ -82,12 +82,10 @@ chunked_dfs <- list(
 ```
 
 ```{r}
-output_dir <- "chunked_dfs"
-dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 saveRDS(
   chunked_dfs,
-  file = file.path(output_dir, "chunked_dfs.rds")
+  file = file.path(output.dir, "chunked_dfs.rds")
 )
 
 
@@ -95,7 +93,7 @@ saveRDS(
 
 iwalk(
   chunked_dfs,
-  ~ write_csv(.x, file.path(output_dir, paste0(.y, ".csv")))
+  ~ write_csv(.x, file.path(output.dir, paste0(.y, ".csv")))
 )
 ```
 
