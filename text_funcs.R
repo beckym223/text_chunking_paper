@@ -10,8 +10,8 @@ get_lower_thresh <- function(chunk_name) {
     )
     ## ---------------------------------------------
     
-    if (chunk_name %in% names(thresholds)) {
-        thresholds[[chunk_name]]
+    if (chunk_name %in% names(lower_thresholds)) {
+        lower_thresholds[[chunk_name]]
     } else {
         10
     }
