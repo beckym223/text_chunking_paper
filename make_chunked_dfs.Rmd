@@ -15,7 +15,10 @@ source("text_funcs.R")
 
 ```{r}
 para_df_path<-"data_const/para_df.csv"
-para_df<-read_csv(para_df_path,show_col_types = F)
+para_df<-read_csv(para_df_path,show_col_types = F)%>%
+  mutate(text_id=paste(doc_id,sprintf("%03.0f",para_num),sep="-"))%>%
+  select(doc_id,text_id,meeting_num,text)
+
 output.dir<-"data"
 
 if(!dir.exists(output.dir)){
@@ -24,9 +27,7 @@ if(!dir.exists(output.dir)){
 ```
 
 
-
-
-# Chunking Strategy 1: Full documents
+# Chunking full documents
 
 ```{r}
 doc_df <- para_df %>%
@@ -41,7 +42,7 @@ doc_df <- para_df %>%
 
 ```
 
-# Chunking Strategy 2: Original document pages
+# Loading original document pages
 
 ```{r}
 page_df <- read_csv("data_const/page_df.csv", show_col_types = FALSE) %>%
@@ -56,18 +57,10 @@ page_df <- read_csv("data_const/page_df.csv", show_col_types = FALSE) %>%
 ```
 
 
-# Chunking Strategy 3: Fixed size chunks, nearest sentence
+# Chunking to fixed size, nearest sentence
 ```{r}
 sent_200_df <- make_sentence_chunks(doc_df, 200)
 sent_500_df <- make_sentence_chunks(doc_df, 500)
-```
-
-# Chunking strategy 4: Author-created paragraphs
-```{r}
-
-out.path = file.path(output.dir, "para_df.csv")
-write_csv(para_df,out.path)
-
 ```
 
 # Put into named list
@@ -79,21 +72,17 @@ chunked_dfs <- list(
   sent_200  = sent_200_df,
   sent_500  = sent_500_df
 )
-```
-
-```{r}
 
 saveRDS(
   chunked_dfs,
   file = file.path(output.dir, "chunked_dfs.rds")
 )
 
-
 #save to csv also
 
 iwalk(
   chunked_dfs,
   ~ write_csv(.x, file.path(output.dir, paste0(.y, ".csv")))
-)
 ```
+
 
