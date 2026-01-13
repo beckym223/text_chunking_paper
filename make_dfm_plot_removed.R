@@ -30,21 +30,14 @@ png(
 
 plotRemoved(
     dfm_stm$documents,
-    seq(0, 100, 5)
-)abline(
-    v = lower_thresh,
-    col = "red",
-    lty = 2,
-    lwd = 2
+    seq(0, 50, 5)
 )
+
 
 title(
     main = paste(
         "plotRemoved diagnostics:",
         chunk_name
-    ),
-    sub = paste(
-        "Red dashed line = lower.thresh =", lower_thresh
     )
 )
 
