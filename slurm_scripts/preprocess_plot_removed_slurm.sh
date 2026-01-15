@@ -14,4 +14,4 @@ cd ~/cleaner_package || { echo "Failed to change directory to ~/stm_work"; exit 
 CHUNKS=(document paragraph page sent_200 sent_500)
 CHUNK_NAME=${CHUNKS[$SLURM_ARRAY_TASK_ID]}
 
-Rscript scripts/make_dfm_plotRemoved.R $CHUNK_NAME
+Rscript scripts/make_dfm_plot_removed.R $CHUNK_NAME
