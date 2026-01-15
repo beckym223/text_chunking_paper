@@ -15,3 +15,5 @@ CHUNKS=(document paragraph page sent_200 sent_500)
 CHUNK_NAME=${CHUNKS[$SLURM_ARRAY_TASK_ID]}
 
 Rscript scripts/make_dfm_plot_removed.R $CHUNK_NAME
+
+# sbatch ~/cleaner_package/slurm_scripts/preprocess_plot_removed_slurm.sh
