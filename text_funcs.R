@@ -168,6 +168,7 @@ preprocess_make_dfm <- function(chunked_df) {
 
 chunk_documents_by_word <- function(doc_df, chunk_size = 500, overlap = 0) {
     require(tibble)
+    require(quanteda)
     toks<-str_extract_all(doc_df$text,"\\b[\\w-]+\\b(?=[^\\w]*)")%>%tokens()
 
     docnames(toks) <- doc_df$text_id
