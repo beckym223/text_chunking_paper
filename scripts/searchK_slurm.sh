@@ -11,4 +11,4 @@ module load r-rocker-ml-verse/4.4.0+apptainer
 
 CHUNK=$(sed -n "$((SLURM_ARRAY_TASK_ID+1))p" scripts/chunks.txt)
 
-Rscript scripts/search_k.R "$CHUNK"
+Rscript scripts/searchK.R "$CHUNK"
