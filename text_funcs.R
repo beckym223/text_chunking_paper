@@ -166,4 +166,36 @@ preprocess_make_dfm <- function(chunked_df) {
     return(dfm)
 }
 
+chunk_documents_by_word <- function(doc_df, chunk_size = 500, overlap = 0) {
+    require(tibble)
+    toks<-str_extract_all(doc_df$text,"\\b[\\w-]+\\b(?=[^\\w]*)")%>%tokens()
 
+    docnames(toks) <- doc_df$text_id
+    
+    # chunk tokens
+    toks_chunked <- tokens_chunk(
+        toks,
+        size = chunk_size,
+        overlap = overlap
+    )
+    
+    # collapse tokens back to text
+    chunk_text <- sapply(toks_chunked, paste, collapse = " ")
+    
+    # build chunk-level dataframe
+    chunk_df <- tibble(
+        chunk_id = str_replace_all(names(chunk_text), "\\.", "-"),
+        text_id = str_remove(names(chunk_text), "\\.[0-9]+$"),
+        text = unname(chunk_text)
+    ) %>%
+        left_join(
+            doc_df %>% select(text_id, year),
+            by = "text_id"
+        ) %>%
+        rename(doc_id=text_id,
+               text_id=chunk_id
+               )%>%
+        select(doc_id,text_id,year,text)
+    
+    return(chunk_df)
+}
