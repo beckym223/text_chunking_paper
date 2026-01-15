@@ -95,6 +95,15 @@ saveRDS(
     file = file.path(output.dir, "chunked_dfs.rds")
 )
 
+#write to text file
+chunk_names <- names(chunked_dfs)
+
+writeLines(
+    chunk_names,
+    con = file.path("scripts", "chunks.txt")
+)
+
+
 #save to csv also
 
 iwalk(
