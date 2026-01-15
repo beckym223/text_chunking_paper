@@ -30,7 +30,7 @@ png(
 
 plotRemoved(
     dfm_stm$documents,
-    seq(0, 50, 5)
+    c(1, seq(5, 50, 5))
 )
 
 
