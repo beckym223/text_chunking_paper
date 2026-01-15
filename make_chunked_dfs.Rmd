@@ -5,6 +5,7 @@
 library(tidyverse)
 library(stringr)
 library(stringi)
+library(quanteda)
 
 source("text_funcs.R")
 
@@ -64,7 +65,23 @@ page_df <- read_csv("data_const/page_df.csv", show_col_types = FALSE) %>%
 ```{r}
 sent_200_df <- make_sentence_chunks(doc_df, 200)
 sent_500_df <- make_sentence_chunks(doc_df, 500)
+
+
+word_200_df<-chunk_documents_by_word(doc_df,
+                                      chunk_size=200,
+                                      overlap=0
+                                      )
+word_500_df<-chunk_documents_by_word(doc_df,
+                                      chunk_size=500,
+                                      overlap=0
+                                      )
+word_500_ol_df<-chunk_documents_by_word(doc_df,
+                                      chunk_size=500,
+                                      overlap=250
+                                      )
+
 ```
+
 
 # Put into named list
 ```{r}
@@ -73,7 +90,10 @@ chunked_dfs <- list(
   page      = page_df,
   paragraph = para_df,
   sent_200  = sent_200_df,
-  sent_500  = sent_500_df
+  sent_500  = sent_500_df,
+  word_200 = word_200_df,
+  word_500 = word_500_df,
+  word_500_ol = word_500_ol_df
 )
 
 saveRDS(
