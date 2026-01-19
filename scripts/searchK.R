@@ -2,7 +2,6 @@
 
 suppressPackageStartupMessages({
     library(stm)
-    library(parallel)
 })
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -28,7 +27,6 @@ prepped <- readRDS(prep_path)
 # searchK
 # ----------------------------
 set.seed(123)
-cores <- parallel::detectCores()
 
 search <- searchK(
     documents  = prepped$documents,
@@ -36,7 +34,8 @@ search <- searchK(
     K          = seq(3,50),
     prevalence = ~ s(year),
     data       = prepped$meta,
-    cores      = cores
+    cores      = 15,
+    verbose = F
 )
 
 saveRDS(
