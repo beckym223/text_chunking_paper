@@ -161,9 +161,10 @@ preprocess_make_dfm <- function(chunked_df) {
     metadata <- chunked_df %>%
         select(text_id, year)
     
-    dfm <- dfm(tokens_processed) %>% convert(to = "stm", docvars = metadata)
-    
-    return(dfm)
+    dfm <- dfm(tokens_processed)
+    dfm_stm<- dfm%>% convert(to = "stm", docvars = metadata)
+    result<-list(dfm = dfm, dfm_stm=dfm_stm)
+    return(result)
 }
 
 chunk_documents_by_word <- function(doc_df, chunk_size = 500, overlap = 0) {
