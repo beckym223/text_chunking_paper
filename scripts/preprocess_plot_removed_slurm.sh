@@ -7,6 +7,9 @@
 #SBATCH --time=02:00:00
 
 # Set working directory
+cd ~/cleaner_package || { echo "Failed to change directory to ~/cleaner_package"; exit 1; }
+
+module load r-rocker-ml-verse/4.4.0+apptainer
 
 CHUNK=$(sed -n "$((SLURM_ARRAY_TASK_ID+1))p" scripts/chunks.txt)
 

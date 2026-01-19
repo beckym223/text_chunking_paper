@@ -6,6 +6,11 @@
 #SBATCH --output=results/logs/searchK_%A_%a.out
 #SBATCH --error=results/logs/searchK_%A_%a.err
 
+
+cd ~/cleaner_package || { echo "Failed to change directory to ~/cleaner_package"; exit 1; }
+
+module load r-rocker-ml-verse/4.4.0+apptainer
+
 CHUNK=$(sed -n "$((SLURM_ARRAY_TASK_ID+1))p" scripts/chunks.txt)
 
 Rscript scripts/searchK.R "$CHUNK"
