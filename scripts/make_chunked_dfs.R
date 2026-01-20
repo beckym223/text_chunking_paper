@@ -1,9 +1,10 @@
 # Libraries
 
-library(tidyverse)
-library(stringr)
-library(stringi)
-library(quanteda)
+suppressPackageStartupMessages({
+    library(tidyverse)
+    library(stringr)
+    library(stringi)
+    library(quanteda)})
 
 source("text_funcs.R")
 
