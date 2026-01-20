@@ -3,7 +3,7 @@ set -euo pipefail
 
 module load r-rocker-ml-verse/4.4.0+apptainer
 # Set working directory
-cd ~/cleaner_package || { echo "Failed to change directory to ~/stm_work"; exit 1; }
+cd ~/cleaner_package || { echo "Failed to change directory to ~/cleaner_package"; exit 1; }
 Rscript scripts/make_chunked_dfs.R
 CHUNK_FILE="scripts/chunks.txt"
 
