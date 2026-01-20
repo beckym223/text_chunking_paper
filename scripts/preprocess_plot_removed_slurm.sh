@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=stm_plotRemoved
-#SBATCH --output=cleaner_package/results/logs/plotRemoved_%A_%a.out
-#SBATCH --error=cleaner_package/results/logs/plotRemoved_%A_%a.err
+#SBATCH --output=results/logs/plotRemoved_%A_%a.out
+#SBATCH --error=results/logs/plotRemoved_%A_%a.err
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=8G
 #SBATCH --time=02:00:00
