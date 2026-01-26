@@ -26,12 +26,6 @@ proj_env$get_lower_thresh <- function(chunk_name) {
     }
 }
 
-
-
-
-
-
-
 proj_env$chunk_names_path<-"scripts/chunks.txt"
 
 proj_env$load_chunk_names<-function(){
@@ -52,6 +46,10 @@ proj_env$chunk_display_names<-list(
 
 
 proj_env$chunk_df_path<-"data/chunked_dfs.rds"
+
+proj_env$get_chunk_csv_path<-function(chunk_name){
+    file.path(data, paste0(chunk_name, ".csv"))
+}
 
 proj_env$get_dfm_path<-function(chunk_name){
     file.path("results/dfms", chunk_name, "dfm.rds")

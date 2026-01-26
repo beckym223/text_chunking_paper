@@ -6,7 +6,10 @@ suppressPackageStartupMessages({
     library(stringi)
     library(quanteda)})
 
+source("scripts/standard_names.R")
 source("text_funcs.R")
+
+
 
 
 
@@ -19,11 +22,8 @@ para_df<-read_csv(para_df_path,show_col_types = F)%>%
     )%>%
     select(doc_id,text_id,year,text)
 
-output.dir<-"data"
-
-if(!dir.exists(output.dir)){
-    dir.create(output.dir, recursive = T)
-}
+out.path<-proj_env$chunk_df_path
+proj_env$create_dir_from_path(out.path)
 
 
 # Chunking full documents
@@ -93,7 +93,7 @@ chunked_dfs <- list(
 
 saveRDS(
     chunked_dfs,
-    file = file.path(output.dir, "chunked_dfs.rds")
+    out.path
 )
 
 #write to text file
@@ -101,7 +101,7 @@ chunk_names <- names(chunked_dfs)
 
 writeLines(
     chunk_names,
-    con = file.path("scripts", "chunks.txt")
+    con = proj_env$chunk_names_path
 )
 
 
@@ -109,7 +109,7 @@ writeLines(
 
 iwalk(
     chunked_dfs,
-    ~ write_csv(.x, file.path(output.dir, paste0(.y, ".csv"))))
+    ~ write_csv(.x, proj_env$get_chunk_csv_path(.y)))
 
 
 
