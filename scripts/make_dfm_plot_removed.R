@@ -3,31 +3,31 @@ suppressPackageStartupMessages({
     library(stm)
 })
 source("text_funcs.R")
+source("scripts/standard_names.R")
 args <- commandArgs(trailingOnly = TRUE)
 chunk_name <- args[1]
 
-
-lower_thresh <- get_lower_thresh(chunk_name)
-
-chunk_dfs <- readRDS("data/chunked_dfs.rds")
+chunk_dfs <- readRDS(proj_env$chunk_df_path)
 chunk_df  <- chunk_dfs[[chunk_name]]
 
 result <- preprocess_make_dfm(chunk_df)
 dfm_stm<-result$dfm_stm
 dfm<-result$dfm
 
-out_dfm_dir <- file.path("results/dfms", chunk_name)
-out_plot_dir <- file.path("results/plotRemoved", chunk_name)
+out_dfm_path<-proj_env$get_dfm_path(chunk_name)
+proj_env$create_dir_from_path(out_dfm_path)
 
-dir.create(out_dfm_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(out_plot_dir, recursive = TRUE, showWarnings = FALSE)
+out_dfm_stm_path<-proj_env$get_dfm_stm_path(chunk_name)
+proj_env$create_dir_from_path(out_dfm_stm_path)
 
+out_plot_path<-proj_env$get_plot_removed_path(chunk_name)
+proj_env$create_dir_from_path(out_plot_path)
 
-saveRDS(dfm_stm, file.path(out_dfm_dir, "dfm_stm.rds"))
-saveRDS(dfm, file.path(out_dfm_dir, "dfm.rds"))
+saveRDS(dfm_stm, out_dfm_stm_path)
+saveRDS(dfm, out_dfm_path)
 
 png(
-    file.path(out_plot_dir, "plotRemoved.png"),
+    out_plot_path,
     width = 800,
     height = 600
 )

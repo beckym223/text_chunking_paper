@@ -10,17 +10,18 @@ if (length(args) != 1) {
 }
 chunk <- args[[1]]
 source("text_funcs.R")
+source("scripts/standard_names.R")
+
 # ----------------------------
 # Paths
 # ----------------------------
-dfm_path <- file.path("results/dfms", chunk, "dfm_stm.rds")
-out_dir  <- file.path("results/prepped", chunk)
-
-dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-
+dfm_path<-proj_env$get_dfm_stm_path(chunk)
+prepped_out_path<-proj_env$get_prepped_out_path(chunk)
+proj_env$create_dir_from_path(prepped_out_path)
 
 
-lower_thresh <- get_lower_thresh(chunk)
+
+lower_thresh <- proj_env$get_lower_thresh(chunk)
 
 
 # ----------------------------
@@ -40,5 +41,5 @@ prepped <- prepDocuments(
 
 saveRDS(
     prepped,
-    file.path(out_dir, "prepped_documents.rds")
+    prepped_out_path
 )

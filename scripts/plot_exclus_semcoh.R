@@ -1,26 +1,17 @@
 library(tidyverse)
 library(purrr)
+
+source("scripts/standard_names.R")
 ### iterate over chunk names in chunks.txt
-chunk_names=readLines(con="scripts/chunks.txt")
-chunk_names=chunk_names[chunk_names!=""]
+chunk_names=proj_env$load_chunk_names()
 
 
-chunk_display_names<-list(
-  document  = "full document",
-  page      = "page",
-  paragraph = "paragraph",
-  sent_200  = "200 word - nearest sentence",
-  sent_500  = "500 word - nearest sentence",
-  word_200 = "200 word",
-  word_500 = "500 word",
-  word_500_ol = "500 word overlapping"
-)
+chunk_display_names<-proj_env$chunk_display_names
 
 
 
 ### For each chunking thing:
-result_path_format<-"~/cleaner_package/results/searchK/%s/searchK_results.rds"
-chooseK_out_dir<-"~/cleaner_package/results/chooseK"
+
 plot_exclus_semcoh_basic<-function(metric_df){
     metric_df%>%
         ggplot(aes(x=K,y=value))+
@@ -50,7 +41,13 @@ plot_choose_searchK<-function(metric_df){
 }
 
 save_search_k_plot<-function(chunk_name,metric_df){
-  out_dir<-file.path(chooseK_out_dir,chunk_name)
+  chosen_k_out_path<-proj_env$get_chooseK_df_path(chunk_name)
+  proj_env$create_dir_from_path(chosen_k_out_path)
+  
+  chosen_k_plot_path<-proj_env$get_chooseK_plot_path(chunk_name)
+  proj_env$create_dir_from_path(chosen_k_plot_path)
+  
+  
     chosen<-metric_df%>%filter(chosen)
     max_k<-max(metric_df$K)
     new_p<-plot_exclus_semcoh_basic(metric_df)+
@@ -67,8 +64,8 @@ save_search_k_plot<-function(chunk_name,metric_df){
       minor_breaks = seq(min(metric_df$K),max_k))+
         theme_minimal()
     
-    plot_save_path<-file.path(out_dir,"chosen_k_metric.png")
-    ggsave(plot_save_path,width = 1100,height=780,dpi=200,units='px')
+    
+    ggsave(chosen_k_plot_path,width = 1100,height=780,dpi=200,units='px')
     
     
     show(new_p)
@@ -77,7 +74,7 @@ save_search_k_plot<-function(chunk_name,metric_df){
 }
 
 load_results<-function(chunk_name){
-    searchK_res <- readRDS(sprintf(result_path_format,chunk_name))
+    searchK_res <- readRDS(proj_env$get_searchK_out_path(chunk_name))
     res<-searchK_res$results
     res[c("K","exclus","semcoh")]%>%
       lapply(unlist)%>%
@@ -98,6 +95,8 @@ load_results<-function(chunk_name){
         as.data.frame()
 }
 results<-map(chunk_names,load_results)
+
+
 
 out<-readline("Input 'Y' to confirm selecting and overwriting chosen K values, or anything else to load current ones: ")
 

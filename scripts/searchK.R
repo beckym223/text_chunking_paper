@@ -9,12 +9,11 @@ if (length(args) != 1) {
     stop("Usage: Rscript search_k.R <chunk_name>")
 }
 chunk <- args[[1]]
-
+source("scripts/standard_names.R")
 # ----------------------------
 # Paths
 # ----------------------------
-prep_path <- file.path("results/prepped", chunk, "prepped_documents.rds")
-out_dir   <- file.path("results/searchK", chunk)
+prep_path <- proj_env$get_prepped_out_path(chunk)
 
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -27,7 +26,11 @@ prepped <- readRDS(prep_path)
 # searchK
 # ----------------------------
 set.seed(123)
+result_out_path<-proj_env$get_searchK_out_path(chunk)
+proj_env$create_dir_from_path(result_out_path)
 
+plot_out_path<-proj_env$get_searchK_plot_path(chunk)
+proj_env$create_dir_from_path(plot_out_path)
 search <- searchK(
     documents  = prepped$documents,
     vocab      = prepped$vocab,
@@ -40,9 +43,9 @@ search <- searchK(
 
 saveRDS(
     search,
-    file.path(out_dir, "searchK_results.rds")
+    result_out_path
 )
 
-png(file.path(out_dir, "searchK_plot.png"), 900, 700)
+png(plot_out_path, 900, 700)
 plot(search)
 dev.off()
