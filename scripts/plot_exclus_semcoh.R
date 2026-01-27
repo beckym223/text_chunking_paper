@@ -41,8 +41,7 @@ plot_choose_searchK<-function(metric_df){
 }
 
 save_search_k_plot<-function(chunk_name,metric_df){
-  chosen_k_out_path<-proj_env$get_chooseK_df_path(chunk_name)%>%
-    create_dir_from_path()
+
   
   chosen_k_plot_path<-proj_env$get_chooseK_plot_path(chunk_name)%>%
     create_dir_from_path()
@@ -70,7 +69,7 @@ save_search_k_plot<-function(chunk_name,metric_df){
     
     show(new_p)
     #print(df_save_path)
-    write_csv(metric_df,df_save_path)
+    
 }
 
 load_results<-function(chunk_name){
@@ -94,6 +93,12 @@ load_results<-function(chunk_name){
                chunk_name=chunk_name)%>%
         as.data.frame()
 }
+
+load_chosen_k<-function(chunk_name){
+  read_csv(proj_env$get_chooseK_df_path(chunk_name),show_col_types = F)
+}
+
+
 results<-map(chunk_names,load_results)
 
 
@@ -102,7 +107,11 @@ out<-readline("Input 'Y' to confirm selecting and overwriting chosen K values, o
 
 if (str_to_lower(out)=="y"){
   metrics<-map(results,plot_choose_searchK)
+  
+  iwalk(metrics,~write_csv(.x,proj_env$get_chooseK_df_path(.y)))
+  chosen_k_out_path<-proj_env$get_chooseK_df_path(chunk_name)%>%
+    create_dir_from_path()
 }
 
-
+metrics<-map(chunk_names,load_chosen_k)
 o<-map2(chunk_names,metrics,~save_search_k_plot(.x,.y))
