@@ -22,8 +22,9 @@ para_df<-read_csv(para_df_path,show_col_types = F)%>%
     )%>%
     select(doc_id,text_id,year,text)
 
-out.path<-proj_env$chunk_df_path
-proj_env$create_dir_from_path(out.path)
+out.path<-proj_env$chunk_df_path%>%
+    create_dir_from_path()
+
 
 
 # Chunking full documents

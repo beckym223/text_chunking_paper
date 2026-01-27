@@ -14,14 +14,14 @@ result <- preprocess_make_dfm(chunk_df)
 dfm_stm<-result$dfm_stm
 dfm<-result$dfm
 
-out_dfm_path<-proj_env$get_dfm_path(chunk_name)
-proj_env$create_dir_from_path(out_dfm_path)
+out_dfm_path<-proj_env$get_dfm_path(chunk_name)%>%
+    create_dir_from_path()
 
-out_dfm_stm_path<-proj_env$get_dfm_stm_path(chunk_name)
-proj_env$create_dir_from_path(out_dfm_stm_path)
+out_dfm_stm_path<-proj_env$get_dfm_stm_path(chunk_name)%>%
+    create_dir_from_path()
 
-out_plot_path<-proj_env$get_plot_removed_path(chunk_name)
-proj_env$create_dir_from_path(out_plot_path)
+out_plot_path<-proj_env$get_plot_removed_path(chunk_name)%>%
+    create_dir_from_path()
 
 saveRDS(dfm_stm, out_dfm_stm_path)
 saveRDS(dfm, out_dfm_path)

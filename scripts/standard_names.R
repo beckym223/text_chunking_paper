@@ -1,11 +1,12 @@
 
 proj_env<-new.env()
 
-proj_env$create_dir_from_path<-function(path){
+create_dir_from_path<-function(path){
     out.dir<-dirname(path)
     if(!dir.exists(out.dir)){
         dir.create(out.dir, recursive = T,showWarnings = F)
     }
+    path
 }
 proj_env$get_lower_thresh <- function(chunk_name) {
     

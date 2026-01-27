@@ -16,10 +16,8 @@ source("scripts/standard_names.R")
 # Paths
 # ----------------------------
 dfm_path<-proj_env$get_dfm_stm_path(chunk)
-prepped_out_path<-proj_env$get_prepped_out_path(chunk)
-proj_env$create_dir_from_path(prepped_out_path)
-
-
+prepped_out_path<-proj_env$get_prepped_out_path(chunk)%>%
+    create_dir_from_path()
 
 lower_thresh <- proj_env$get_lower_thresh(chunk)
 

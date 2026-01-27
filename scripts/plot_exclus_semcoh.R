@@ -41,11 +41,11 @@ plot_choose_searchK<-function(metric_df){
 }
 
 save_search_k_plot<-function(chunk_name,metric_df){
-  chosen_k_out_path<-proj_env$get_chooseK_df_path(chunk_name)
-  proj_env$create_dir_from_path(chosen_k_out_path)
+  chosen_k_out_path<-proj_env$get_chooseK_df_path(chunk_name)%>%
+    create_dir_from_path()
   
-  chosen_k_plot_path<-proj_env$get_chooseK_plot_path(chunk_name)
-  proj_env$create_dir_from_path(chosen_k_plot_path)
+  chosen_k_plot_path<-proj_env$get_chooseK_plot_path(chunk_name)%>%
+    create_dir_from_path()
   
   
     chosen<-metric_df%>%filter(chosen)

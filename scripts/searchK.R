@@ -15,8 +15,6 @@ source("scripts/standard_names.R")
 # ----------------------------
 prep_path <- proj_env$get_prepped_out_path(chunk)
 
-dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-
 # ----------------------------
 # Load data
 # ----------------------------
@@ -26,11 +24,12 @@ prepped <- readRDS(prep_path)
 # searchK
 # ----------------------------
 set.seed(123)
-result_out_path<-proj_env$get_searchK_out_path(chunk)
-proj_env$create_dir_from_path(result_out_path)
+result_out_path<-proj_env$get_searchK_out_path(chunk)%>%
+    create_dir_from_path()
 
-plot_out_path<-proj_env$get_searchK_plot_path(chunk)
-proj_env$create_dir_from_path(plot_out_path)
+plot_out_path<-proj_env$get_searchK_plot_path(chunk)%>%
+    create_dir_from_path()
+
 search <- searchK(
     documents  = prepped$documents,
     vocab      = prepped$vocab,
