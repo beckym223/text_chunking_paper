@@ -85,3 +85,12 @@ proj_env$get_chooseK_df_path<-function(chunk_name){
 proj_env$get_chooseK_plot_path<-function(chunk_name){
     file.path("results/chooseK",chunk_name,"chosen_k_metric.png")
 }
+
+proj_env$get_stm_dir<-function(chunk_name){
+    file.path("results/chosen_stms",chunk_name)
+}
+
+proj_env$get_stm_path<-function(chunk_name,k){
+    file.path(proj_env$get_stm_dir(chunk_name),sprintf("stm_%d.rds",k))
+}
+
