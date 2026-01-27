@@ -2,8 +2,8 @@ suppressPackageStartupMessages({
     library(quanteda)
     library(stm)
 })
-source("text_funcs.R")
-source("scripts/standard_names.R")
+source("scripts/utils/text_funcs.R")
+source("scripts/utils/standard_names.R")
 args <- commandArgs(trailingOnly = TRUE)
 chunk_name <- args[1]
 

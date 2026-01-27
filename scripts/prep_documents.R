@@ -9,8 +9,8 @@ if (length(args) != 1) {
     stop("Usage: Rscript prep_documents.R <chunk_name>")
 }
 chunk <- args[[1]]
-source("text_funcs.R")
-source("scripts/standard_names.R")
+source("scripts/utils/text_funcs.R")
+source("scripts/utils/standard_names.R")
 
 # ----------------------------
 # Paths
