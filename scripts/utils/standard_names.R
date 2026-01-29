@@ -94,3 +94,12 @@ proj_env$get_stm_path<-function(chunk_name,k){
     file.path(proj_env$get_stm_dir(chunk_name),sprintf("stm_%d.rds",k))
 }
 
+proj_env$get_model_id<-function(chunk_name,k){
+    sprintf("%s_%dk",chunk_name,k)
+}
+
+proj_env$get_topic_id<-function(chunk_name,k,topic_num){
+    paste0(proj_env$get_model_id(chunk_name,k),"_t",topic_num)
+}
+
+proj_env$agg_topic_df_path<-"results/combined_results/agg_topic_labels.csv"
