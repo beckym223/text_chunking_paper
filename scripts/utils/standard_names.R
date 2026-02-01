@@ -45,6 +45,17 @@ proj_env$chunk_display_names<-list(
         word_500_ol = "500 word overlapping"
     )
 
+proj_env$chunk_abrev<-list(
+    document  = "doc",
+    page      = "pg",
+    paragraph = "par",
+    sent_200  = "sen2",
+    sent_500  = "sen5",
+    word_200 = "w2",
+    word_500 = "w5",
+    word_500_ol = "w5ol"
+)
+
 
 proj_env$chunk_df_path<-"data/chunked_dfs.rds"
 
@@ -103,3 +114,38 @@ proj_env$get_topic_id<-function(chunk_name,k,topic_num){
 }
 
 proj_env$agg_topic_df_path<-"results/combined_results/agg_topic_labels.csv"
+
+proj_env$name_k_from_id<-function(model_id){
+   str_match(model_id,"(?<chunk>[a-z_0-9]+)_(?<k>\\d+)k")
+    
+}
+
+proj_env$get_abrev_model_id<-function(model_id){
+    info<-proj_env$name_k_from_id(model_id)
+    paste0(proj_env$chunk_abrev[info[1,'chunk']],"_",info[1,'k'],'k')
+}
+
+proj_env$get_model_path_id<-function(path){
+    lapply(path,proj_env$get_abrev_model_id)%>%str_flatten("_")
+}
+
+proj_env$model_ids_from_abrev_path<-function(abrev_path){
+    ids<-str_extract_all(abrev_path,'[a-z][\\w\\d]+?_\\d+k')[[1]]
+    infos<-proj_env$name_k_from_id(ids)
+    full_names<-sapply(infos[,'chunk'],function(x){
+        names(proj_env$chunk_abrev[proj_env$chunk_abrev==x])[1]})
+    paste0(full_names,"_",infos[,"k"],"k")
+}
+
+proj_env$get_sankey_out_dir<-function(model_list){
+    file.path("results/sankeys",proj_env$get_model_path_id(model_list))
+}
+
+proj_env$get_sankey_links_path<-function(model_list){
+    file.path(proj_env$get_sankey_out_dir(model_list),"link_df.csv")
+}
+
+proj_env$get_sankey_nodes_path<-function(model_list){
+    file.path(proj_env$get_sankey_out_dir(model_list),"node_df.csv")
+    
+}
