@@ -149,3 +149,6 @@ proj_env$get_sankey_nodes_path<-function(model_list){
     file.path(proj_env$get_sankey_out_dir(model_list),"node_df.csv")
     
 }
+proj_env$get_sankey_data_json<-function(model_list){
+    file.path("results/sankeys/json_data",paste0(proj_env$get_model_path_id(model_list),".json"))
+}
