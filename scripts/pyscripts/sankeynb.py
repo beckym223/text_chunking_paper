@@ -1,3 +1,15 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     formats: notebooks//ipynb,py:percent
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.19.1
+# ---
+
 # %%
 import pandas as pd
 import re
@@ -6,7 +18,7 @@ import os
 import json
 from typing import List, Dict, Tuple,Any, Optional,Callable
 os.chdir("/home/marcu22r_mtholyoke_edu/cleaner_package")
-
+#test 3
 # %%
 os.path.dirname
 
@@ -568,7 +580,7 @@ def color_nodes_by_combos(
     node_df = color_node_df.drop(['priority','prioritized'],axis=1).rename(columns={'flow_color':'node_color'})
     return node_df, link_df
     #link_color_df[['source_color_exists','target_color_exists']] = ~link_color_df[['source_flow_color','target_flow_color']].isna()
-    
+
 
 # %%
 def make_sankey_params_invisible_nodes(
@@ -711,7 +723,7 @@ link_color_df = (color_merged.copy()
             .sort_values('priority')
             .drop_duplicates(['source','target','overlap_size'])
             )
-                                                        
+
 
 # %%
 color_merged
