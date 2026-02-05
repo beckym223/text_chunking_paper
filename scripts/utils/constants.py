@@ -1,3 +1,5 @@
+JSON_DATA_PATH = "results/sankeys/json_data"
+
 CHUNK_DISPLAY_NAMES=dict(
         document  = "full document",
         page      = "page",
