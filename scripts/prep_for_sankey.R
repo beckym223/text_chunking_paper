@@ -22,30 +22,30 @@ token_unions<-token_vects%>%
         overlap_size = map(overlap_toks,length)%>%as.integer()
     )%>%filter(overlap_size!=0)%>%arrange(overlap_size)%>%
     rename(source=topic_id.x,
-           dest=topic_id.y,
+           target=topic_id.y,
            src_model = model_id.x,
-           dest_model = model_id.y)
+           target_model = model_id.y)
 
-make_source_dest_from_path<-function(model_path){
-    pairs <- lapply(1:(length(model_path) - 1), function(i) list(src=model_path[i],dest=model_path[i + 1]))
+make_source_target_from_path<-function(model_path){
+    pairs <- lapply(1:(length(model_path) - 1), function(i) list(src=model_path[i],target=model_path[i + 1]))
     all_nodes<-data.frame()
     all_links<-data.frame()
     for (i in seq_along(pairs)){
         p<-pairs[[i]]
         unions<-token_unions%>%
-            filter((src_model==p$src)&(dest_model==p$dest))
+            filter((src_model==p$src)&(target_model==p$target))
         
         all_links<-unions%>%
-            select(source,dest,overlap_size)%>%
+            select(source,target,overlap_size)%>%
             bind_rows(all_links)
         new_nodes<-unions%>%
-            pivot_longer(cols=c(source,dest),values_to = 'topic_id')%>%
+            pivot_longer(cols=c(source,target),values_to = 'topic_id')%>%
             mutate(is.source = (name=='source'),
-                   is.dest = (name=='dest'),
+                   is.target = (name=='target'),
                    model_id = str_extract(topic_id,"\\w+\\d+k"),
                    topic_num = as.numeric(str_extract(topic_id,"\\d+$"))
                    )%>%
-            select(topic_id,model_id,topic_num,overlap_toks,is.source,is.dest)
+            select(topic_id,model_id,topic_num,overlap_toks,is.source,is.target)
         
         all_nodes<-new_nodes%>%
             bind_rows(all_nodes)%>%
@@ -53,7 +53,7 @@ make_source_dest_from_path<-function(model_path){
             summarise(
                 overlap_toks = list(reduce(overlap_toks, union)),
                 is.source = any(is.source),
-                is.dest= any(is.dest),
+                is.target= any(is.target),
                 .groups = "drop"
             )
 
@@ -72,21 +72,37 @@ make_source_dest_from_path<-function(model_path){
         merge(
             all_nodes%>%
                 select(topic_id,node_id)%>%
-                rename(dest=topic_id,dest_id=node_id)
+                rename(target=topic_id,target_id=node_id)
             )%>%
-        select(source,source_id,dest,dest_id,overlap_size)
+        select(source,source_id,target,target_id,overlap_size)
         
     list(nodes=all_nodes,links=all_links_id)
 }
 
 make_save_sankey_prep<-function(model_path){
-    result<-make_source_dest_from_path(model_path)
+    result<-make_source_target_from_path(model_path)
     links_out<-proj_env$get_sankey_links_path(model_path)%>%
         create_dir_from_path()
     nodes_out<-proj_env$get_sankey_nodes_path(model_path)%>%
         create_dir_from_path()
+    
+    json_out_path<-proj_env$get_sankey_data_json(model_path)%>%
+        create_dir_from_path()
     result$links%>%write_csv(links_out)
     result$nodes%>%write_csv(nodes_out)
+    json_output = list(
+        model_ids = model_path,
+        data=result
+        
+    )
+    write_json(json_output,
+               json_out_path,
+               pretty = TRUE, auto_unbox = TRUE)
 }
+token_union_sum<-token_unions%>%
+    select(src_model,target_model,overlap_size,source,target)
 model_path<-c("document_10k","page_10k","word_500_18k")
 make_save_sankey_prep(model_path)
+
+
+models<-label_df%>%distinct(model_id,chunk_name,K)
