@@ -2,7 +2,7 @@ library(tidyverse)
 library(stm)
 library(purrr)
 ### iterate over chunk names in chunks.txt
-source("scripts/utils/standard_names.R")
+source("scripts/rscripts/utils/standard_names.R")
 chunk_names<-proj_env$load_chunk_names()
 chunk_display_names<-proj_env$chunk_display_names
 

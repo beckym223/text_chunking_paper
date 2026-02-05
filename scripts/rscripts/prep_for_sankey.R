@@ -1,5 +1,5 @@
 library(dplyr)
-source("scripts/utils/standard_names.R")
+source("scripts/rscripts/utils/standard_names.R")
 label_df<-read_csv(proj_env$agg_topic_df_path,show_col_types = F)
 
 get_topic_overlap<-function(label_df,topic_id1,topic_id2){

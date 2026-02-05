@@ -6,8 +6,8 @@ suppressPackageStartupMessages({
     library(stringi)
     library(quanteda)})
 
-source("scripts/utils/standard_names.R")
-source("scripts/utils/text_funcs.R")
+source("scripts/rscripts/utils/standard_names.R")
+source("scripts/rscripts/utils/text_funcs.R")
 
 
 

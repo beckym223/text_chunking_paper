@@ -9,7 +9,7 @@ if (length(args) != 1) {
     stop("Usage: Rscript search_k.R <chunk_name>")
 }
 chunk <- args[[1]]
-source("scripts/utils/standard_names.R")
+source("scripts/rscripts/utils/standard_names.R")
 # ----------------------------
 # Paths
 # ----------------------------

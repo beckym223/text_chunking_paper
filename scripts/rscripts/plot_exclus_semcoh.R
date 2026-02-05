@@ -1,7 +1,7 @@
 library(tidyverse)
 library(purrr)
 
-source("scripts/utils/standard_names.R")
+source("scripts/rscripts/utils/standard_names.R")
 ### iterate over chunk names in chunks.txt
 chunk_names=proj_env$load_chunk_names()
 
