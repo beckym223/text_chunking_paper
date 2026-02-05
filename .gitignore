@@ -6,9 +6,7 @@ ignore/
 results/
 data/
 renv/
-bin/
-include/
-lib*/
+env/
 share/
 etc/
 *.ipynb
