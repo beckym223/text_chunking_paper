@@ -5,3 +5,13 @@
 ignore/
 results/
 data/
+renv/
+bin/
+include/
+lib*/
+share/
+etc/
+*.ipynb
+.*
+!.gitignore
+
