@@ -54,3 +54,9 @@ get_labels<-function(model,n=4,wrap=2,with_num=T){
                                       "\\1\n"
                       )})
 }
+
+plot_topics_cust(model,title){
+    plot(model,main=title,labeltype = "frex",
+         xlim=c(0,1),
+         topic.names = sapply(seq(paraB$settings$dim$K),tlabel))
+}
