@@ -1,9 +1,7 @@
 import pandas as pd
-import re
 from plotly import graph_objects as go
 import os
-import json
-from typing import List, Dict, Tuple,Any, Optional,Callable
+from typing import Dict, Any, Optional,Callable
 
 def basic_sankey_fig(
     links_dict,
