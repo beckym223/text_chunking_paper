@@ -1,6 +1,6 @@
-import pandas as pd #type:ignore
+import pandas as pd
 import re
-from plotly import graph_objects as go #type:ignore
+from plotly import graph_objects as go
 import os
 import json
 from typing import List, Dict, Tuple,Any, Optional,Callable
@@ -99,43 +99,26 @@ def save_fig(
     
 
 def make_save_sankey(
-    source_ids:list[int],
-    target_ids:list[int],
-    values:list[float],
-    labels:list[str],
+    nodes_dict:dict,
+    links_dict:dict,
     fig_height = 600,
     fig_width = 1000,
     sankey_column_labels: Optional[list[str]] = None,
     title_params: Optional[dict] = None,
     show_plot = True,
     image_save_path:Optional[str] = None,
-    addl_node_params:Optional[dict] = None,
-    addl_link_params:Optional[dict] = None,
     fig_layout_params:Optional[dict] = None,
     save_params:Optional[dict[str,Any]] = None
     ):
 
     fig_layout_params = fig_layout_params or {}
     title_params = title_params or {}
-    node_params = addl_node_params or {}
-    link_params = addl_link_params or {}
     save_params = save_params or {}
 
-    node_dict = {
-        **node_params,
-        "labels":labels
-    }
-
-    link_dict = {
-        "source":source_ids,
-        "target":target_ids,
-        "values":values,
-        **link_params
-    }
 
     fig = basic_sankey_fig(
-        node_dict,
-        link_dict,
+        links_dict,
+        nodes_dict,
         height=fig_height,
         width = fig_width,
         **fig_layout_params
