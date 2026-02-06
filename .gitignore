@@ -13,3 +13,5 @@ etc/
 .*
 !.gitignore
 *env/
+__pycache__
+.ipynb_checkpoints
