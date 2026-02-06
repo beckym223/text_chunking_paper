@@ -20,8 +20,8 @@ token_unions<-token_vects%>%
     filter(topic_id.x!=topic_id.y)%>%
     mutate(
         overlap_toks=map2(token_list.x,token_list.y,intersect),
-        overlap_size = map(overlap_toks,length)%>%as.integer()
-    )%>%filter(overlap_size!=0)%>%arrange(overlap_size)%>%
+        value = map(overlap_toks,length)%>%as.integer()
+    )%>%filter(value!=0)%>%arrange(value)%>%
     rename(source=topic_id.x,
            target=topic_id.y,
            src_model = model_id.x,
@@ -36,24 +36,24 @@ make_source_target_from_path<-function(model_path){
             filter((src_model==p$src)&(target_model==p$target))
         
         all_links<-unions%>%
-            select(source,target,overlap_size)%>%
+            select(source,target,value)%>%
             bind_rows(all_links)
         new_nodes<-unions%>%
             pivot_longer(cols=c(source,target),values_to = 'topic_id')%>%
-            mutate(is.source = (name=='source'),
-                   is.target = (name=='target'),
+            mutate(is_source = (name=='source'),
+                   is_target = (name=='target'),
                    model_id = str_extract(topic_id,"\\w+\\d+k"),
                    topic_num = as.numeric(str_extract(topic_id,"\\d+$"))
             )%>%
-            select(topic_id,model_id,topic_num,overlap_toks,is.source,is.target)
+            select(topic_id,model_id,topic_num,overlap_toks,is_source,is_target)
         
         all_nodes<-new_nodes%>%
             bind_rows(all_nodes)%>%
             group_by(topic_id,model_id,topic_num)%>%
             summarise(
                 overlap_toks = list(reduce(overlap_toks, union)),
-                is.source = any(is.source),
-                is.target= any(is.target),
+                is_source = any(is_source),
+                is_target= any(is_target),
                 .groups = "drop"
             )
         
@@ -74,7 +74,7 @@ make_source_target_from_path<-function(model_path){
                 select(topic_id,node_id)%>%
                 rename(target=topic_id,target_id=node_id)
         )%>%
-        select(source,source_id,target,target_id,overlap_size)
+        select(source,source_id,target,target_id,value)
     
     list(nodes=all_nodes,links=all_links_id)
 }
@@ -118,4 +118,4 @@ cust_paths<-list(
 )
 all_paths<-c(paths,cust_paths)
 
-walk(cust_paths,make_save_sankey_prep)
+walk(all_paths,make_save_sankey_prep)
