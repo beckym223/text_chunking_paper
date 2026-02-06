@@ -1,6 +1,6 @@
-import pandas as pd
+import pandas as pd #type:ignore
 import re
-from plotly import graph_objects as go
+from plotly import graph_objects as go #type:ignore
 import os
 import json
 from typing import List, Dict, Tuple,Any, Optional,Callable
@@ -41,7 +41,7 @@ def add_titles(
     n_col = len(title_list)
 
     left_title = title_list[0]
-    right_title = title_list[-1] if ncol>1 else None
+    right_title = title_list[-1] if n_col>1 else None
     center_titles = [(title_list[x],x/(n_col-1)) for x in range(1,n_col-1)]
     
     if left_title is not None:
@@ -69,7 +69,7 @@ def add_titles(
     for text,x in center_titles:
         #print(text,x)
         fig.add_annotation(
-                text=title_format(text),
+                text=title_format(text), #type:ignore
                 y=title_y,
                 font=font_args,
                 x=x,
@@ -88,12 +88,12 @@ def save_fig(
     exist_ok=True,
     make_dirs=True,
     **save_params
-    )
+    ):
 
     if not exist_ok and os.path.exists(path):
         raise FileExistsError(f"{path} exists")
     if make_dirs:
-        os.make_dirs(os.path.dirname(path),exist_ok=True)
+        os.makedirs(os.path.dirname(path),exist_ok=True)
 
     fig.write_image(path,**save_params)
     
@@ -106,17 +106,20 @@ def make_save_sankey(
     fig_height = 600,
     fig_width = 1000,
     sankey_column_labels: Optional[list[str]] = None,
-    title_params: Optional[dict,str] = None,
+    title_params: Optional[dict] = None,
     show_plot = True,
     image_save_path:Optional[str] = None,
     addl_node_params:Optional[dict] = None,
     addl_link_params:Optional[dict] = None,
     fig_layout_params:Optional[dict] = None,
-    save_params:Optional[dict] = None
+    save_params:Optional[dict[str,Any]] = None
     ):
 
+    fig_layout_params = fig_layout_params or {}
+    title_params = title_params or {}
     node_params = addl_node_params or {}
     link_params = addl_link_params or {}
+    save_params = save_params or {}
 
     node_dict = {
         **node_params,
@@ -135,13 +138,13 @@ def make_save_sankey(
         link_dict,
         height=fig_height,
         width = fig_width,
-        **layout_kwargs
+        **fig_layout_params
     )
 
     if sankey_column_labels is not None:
         add_titles(
             fig,
-            sankey_column_labels,
+            sankey_column_labels, #type:ignore
             **title_params
         )
 
