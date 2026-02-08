@@ -21,3 +21,10 @@ CHUNK_ABBREV=dict(
     word_500 = "w5",
     word_500_ol = "w5ol"
 )
+
+FIG_WIDTH_BY_COLUMN_COUNT:dict[int,int] ={
+    2:600,
+    3:1000,
+    4:1200,
+    5:1400
+}
