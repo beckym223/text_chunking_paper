@@ -5,7 +5,7 @@ from plotly.colors import qualitative as qc
 import os
 import json
 from typing import List, Dict, Tuple,Any, Optional,Callable
-from utils.constants import CHUNK_DISPLAY_NAMES, JSON_DATA_PATH
+from utils.constants import CHUNK_DISPLAY_NAMES, JSON_DATA_PATH,FIG_WIDTH_BY_COLUMN_COUNT
 from utils.plot_utils import make_save_sankey
 
 ### Helper functions
@@ -234,7 +234,9 @@ def main():
         top_titles = [get_model_title(t) for t in model_path] +([""] if extra_col else [])
         
         three_line_title_pad = 20*int(any([t.count("<br>")>1 for t in top_titles]))
-        fig_width = (350*num_cols-700 if extra_col else 600)
+        fig_width = FIG_WIDTH_BY_COLUMN_COUNT.get(num_cols,1000)
+        max_nodes_in_col=int(node_df.groupby('path_idx').size().max())
+        fig_height:int = max_nodes_in_col*75+100
 
 
         save_path = os.path.join(uncolored_dir,flow_id+".png")
@@ -245,12 +247,16 @@ def main():
             scale=2
         )
         fig_layout_params = dict(
-            margin=dict(t=60+three_line_title_pad,b=50-three_line_title_pad,l=40,r=20)
+            margin=dict(t=60+three_line_title_pad,
+                        b=50-three_line_title_pad,
+                        l=40,
+                        r=40*int(num_cols==2)
+                        )
         )
         make_save_sankey(
             node_params,
             link_params,
-            fig_height=1200,
+            fig_height=fig_height,
             fig_width=fig_width,
             sankey_column_labels=top_titles,
             title_params=title_params,
